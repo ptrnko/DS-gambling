@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bet Route — Registration Redesign — Anastasiia Petrenko</title>
+<meta name="description" content="Bet Route — improving the sports betting registration flow. Case study by Anastasiia Petrenko.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: #08080a; color: #fff; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #6fb2ff; text-decoration: none; }
+  a:hover { color: #9cccff; }
+  ::selection { background: #4493fa; color: #08080a; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.12); }
+  }
+  @keyframes heroFadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes phoneFadeIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes phoneFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-14px); }
+  }
+  @keyframes gridDrift {
+    from { background-position: 0px 0px, 0px 0px; }
+    to   { background-position: 64px 64px, 64px 64px; }
+  }
+
+  /* HEADER */
+  .br-header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 56px;
+    background: rgba(8,8,10,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  }
+  .br-header__back {
+    font-size: 13px; font-weight: 600; color: #8a8a90;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .br-header__back:hover { color: #cfcfd4; }
+  .br-header__crumb {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: #5a5a60; letter-spacing: 0.6px; text-transform: uppercase;
+  }
+  .br-header__crumb span:nth-child(2) { opacity: 0.4; }
+  .br-header__crumb span:nth-child(3) { color: #4493fa; }
+  .br-header__contact {
+    font-size: 13px; font-weight: 600; color: #ffffff;
+    padding: 9px 20px; border: 0.5px solid rgba(255,255,255,0.14); border-radius: 999px;
+  }
+  .br-header__contact:hover { color: #ffffff; border-color: rgba(255,255,255,0.3); }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 56px; }
+  .section-eyebrow {
+    font-size: 13px; font-weight: 600; color: #4493fa;
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .section-heading {
+    font-size: clamp(28px, 3vw, 40px); font-weight: 700; color: #fff;
+    letter-spacing: -0.02em; line-height: 1.3;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative; padding: 100px 56px 90px; overflow: hidden;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+    animation: gridDrift 8s linear infinite;
+  }
+  .hero__glow {
+    position: absolute; width: 560px; height: 560px; border-radius: 50%;
+    top: -160px; left: -160px;
+    background: radial-gradient(circle, rgba(68,147,250,0.18) 0%, rgba(68,147,250,0) 65%);
+    animation: glowPulse 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .hero__storm { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .hero__fade {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: linear-gradient(180deg, #08080a 0%, rgba(8,8,10,0.4) 40%, rgba(8,8,10,0.9) 100%);
+  }
+  .hero__inner {
+    position: relative; z-index: 2; max-width: 1168px; margin: 0 auto;
+    display: grid; grid-template-columns: minmax(280px,1fr) minmax(240px,460px);
+    gap: 40px; align-items: center;
+  }
+  .hero__content { max-width: 600px; }
+  .hero__eyebrow {
+    font-size: 13px; font-weight: 600; color: #8fc0ff; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 24px; opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s forwards;
+  }
+  .hero__title {
+    font-size: clamp(36px,4.6vw,58px); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em;
+    color: #fff; margin-bottom: 28px; opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.15s forwards;
+  }
+  .hero__title span { color: #4493fa; }
+  .hero__desc {
+    font-size: 17px; line-height: 1.65; color: rgba(255,255,255,0.55); margin-bottom: 48px; max-width: 520px;
+    opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.28s forwards;
+  }
+  .hero__meta {
+    display: flex; gap: 40px; flex-wrap: wrap;
+    opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+  }
+  .hero__meta-cell { display: flex; flex-direction: column; gap: 6px; }
+  .hero__meta-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+  .hero__meta-val { font-size: 16px; font-weight: 500; color: #fff; }
+  .hero__phone-wrap {
+    position: relative; opacity: 0; animation: phoneFadeIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  .hero__phone-wrap img {
+    width: 100%; max-width: 100%; display: block; margin: -60px 0 -90px; position: relative; z-index: 1;
+    animation: phoneFloat 5s ease-in-out 1.1s infinite;
+  }
+
+  /* 01 OVERVIEW */
+  .overview { padding: 150px 56px 150px; }
+  .overview__grid {
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: flex-start;
+    margin-top: 28px; margin-bottom: 50px;
+  }
+  .funnel {
+    display: flex; align-items: flex-end; gap: 20px; padding: 24px;
+    background: rgba(255,255,255,0.02); border-radius: 16px;
+  }
+  .funnel__col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .funnel__pct { font-size: 13px; font-weight: 700; }
+  .funnel__bar { width: 100%; border-radius: 8px 8px 0 0; }
+  .funnel__label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+
+  .pill-outline {
+    display: inline-block; font-size: 11px; font-weight: 700; color: #4493fa;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    border: 1px solid rgba(68,147,250,0.4); border-radius: 999px; padding: 6px 14px;
+    margin-top: 72px;
+  }
+  .stat-panels {
+    display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 2px;
+    background: rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; margin-top: 24px;
+  }
+  .stat-panel {
+    background: #0e0e11; padding: 44px 36px; display: flex; flex-direction: column;
+    justify-content: space-between; gap: 32px; min-height: 280px;
+  }
+  .stat-panel:first-child { padding: 44px 40px; gap: 40px; }
+  .stat-panel__num { font-size: 64px; font-weight: 800; color: #fff; line-height: 0.9; letter-spacing: -0.03em; }
+  .stat-panel__desc { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+  .stat-panel:first-child .stat-panel__desc { font-size: 16px; max-width: 340px; }
+
+  /* 02 RESEARCH */
+  .research { padding: 0 0 200px; }
+  .research__grid {
+    display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 64px; align-items: center;
+    max-width: 1280px; margin: 0 auto; padding: 0 56px;
+  }
+  .research__text { display: flex; flex-direction: column; gap: 28px; max-width: 536px; }
+  .research__heading { max-width: 536px; }
+  .chip-inline {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 500;
+    color: #4493fa; border: 1px solid rgba(68,147,250,0.4); border-radius: 999px;
+    padding: 5px 14px; vertical-align: middle; margin: 0 2px;
+  }
+  .research__quote { font-size: 16px; color: rgba(254,254,254,0.74); line-height: 1.7; max-width: 420px; font-style: italic; }
+  .research__photo { border-radius: 24px; overflow: hidden; }
+  .research__photo img { width: 100%; display: block; object-fit: cover; }
+
+  /* 03 PROCESS */
+  .process { padding: 0 56px 200px; max-width: 1280px; margin: 0 auto; }
+  .process__heading { margin-top: 20px; margin-bottom: 56px; max-width: 640px; }
+  .process__grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+    background: rgba(255,255,255,0.1); border-radius: 24px; overflow: hidden;
+  }
+  .process__col {
+    background: #0d0d10; padding: 44px 50px; display: flex; flex-direction: column;
+    justify-content: space-between; gap: 64px; min-height: 340px;
+  }
+  .process__num { font-size: 72px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.03em; }
+  .process__title { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -0.01em; margin-top: 20px; }
+  .process__tags { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .tag-pill {
+    display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500;
+    color: #dbe9ff; background: rgba(68,147,250,0.1); border-radius: 10px; padding: 9px 15px;
+  }
+  .tag-pill__dot { width: 6px; height: 6px; border-radius: 50%; background: #4493fa; flex-shrink: 0; }
+
+  /* 04 VALIDATION */
+  .validation { padding: 0 56px 200px; max-width: 1280px; margin: 0 auto; }
+  .validation__grid { display: grid; grid-template-columns: 1fr 420px; gap: 48px; align-items: stretch; }
+  .validation__left { display: flex; flex-direction: column; }
+  .validation__heading { max-width: 560px; margin-top: 20px; }
+  .validation__tasks { margin-top: auto; }
+  .validation__task {
+    padding: 28px 0; border-top: 1px solid rgba(255,255,255,0.12);
+    display: grid; grid-template-columns: auto 1fr; gap: 28px;
+  }
+  .validation__task:last-child { border-bottom: 1px solid rgba(255,255,255,0.12); }
+  .validation__task-num { font-size: 15px; font-weight: 800; color: #4493fa; }
+  .validation__task-title { font-size: 20px; color: #fff; line-height: 1.45; }
+  .validation__task-sub { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.5; margin-top: 10px; }
+  .validation__image {
+    border-radius: 24px 0 0 24px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.55); margin-right: -56px;
+  }
+  .validation__image img { width: 100%; display: block; object-fit: cover; }
+
+  /* FULL BLEED */
+  .full-bleed { max-width: 1280px; margin: 0 auto; padding: 0 56px 200px; }
+  .full-bleed__img { border-radius: 20px; overflow: hidden; background: #0e0e11; }
+  .full-bleed__img img { width: 100%; display: block; object-fit: cover; }
+
+  /* 05 PRIORITIZATION (RICE) */
+  .rice { padding: 0 56px 200px; max-width: 1280px; margin: 0 auto; }
+  .rice__heading { margin-top: 20px; margin-bottom: 16px; max-width: 640px; }
+  .rice__intro { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 560px; margin-bottom: 56px; }
+  .rice__list { display: flex; flex-direction: column; gap: 20px; }
+  .rice-card {
+    position: relative; overflow: hidden; background: rgba(255,255,255,0.03);
+    border-radius: 20px; padding: 32px 36px; opacity: 0; transform: translateY(24px);
+    transition: transform .35s cubic-bezier(0.16,1,0.3,1), box-shadow .35s, border-color .35s;
+    border: 1px solid transparent;
+  }
+  .rice-card--top {
+    background: linear-gradient(110deg, rgba(68,147,250,0.14), rgba(68,147,250,0.02) 60%);
+    border-color: rgba(68,147,250,0.45);
+  }
+  .rice-card__glow {
+    position: absolute; width: 300px; height: 300px; border-radius: 50%; top: -140px; right: -60px;
+    background: radial-gradient(circle, rgba(68,147,250,0.22) 0%, rgba(68,147,250,0) 68%); pointer-events: none;
+  }
+  .rice-card__row { position: relative; display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+  .rice-card__idea { display: flex; align-items: baseline; gap: 10px; flex: 1; min-width: 260px; }
+  .rice-card__num { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: rgba(255,255,255,0.25); }
+  .rice-card--top .rice-card__num { color: #4493fa; }
+  .rice-card__label { font-size: 17px; color: rgba(255,255,255,0.85); line-height: 1.5; font-weight: 500; }
+  .rice-card--top .rice-card__label { color: #fff; }
+  .rice-card__score-col { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .rice-card__score { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; color: rgba(255,255,255,0.85); }
+  .rice-card--top .rice-card__score { color: #fff; }
+  .rice-card__score-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+  .rice-card--top .rice-card__score-label { color: #4493fa; }
+  .rice-card__bars { position: relative; display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-top: 28px; }
+  .rice-bar__top { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .rice-bar__label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.45); letter-spacing: 0.8px; text-transform: uppercase; }
+  .rice-bar__val { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); }
+  .rice-card--top .rice-bar__val { color: #8fc0ff; }
+  .rice-bar__track { height: 5px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .rice-bar__fill {
+    height: 100%; width: 0; border-radius: 3px; background: rgba(255,255,255,0.55);
+    transition: width 1s cubic-bezier(0.16,1,0.3,1);
+  }
+  .rice-bar__fill--dim { background: rgba(255,255,255,0.35); }
+  .rice-card--top .rice-bar__fill { background: #4493fa; }
+  .rice-card--top .rice-bar__fill--dim { background: rgba(143,192,255,0.5); }
+
+  /* 06 DESIGN (annotated) */
+  .design { padding: 0 56px 200px; max-width: 1280px; margin: 0 auto; }
+  .design__heading { margin-top: 20px; margin-bottom: 64px; max-width: 600px; }
+  .design__panel {
+    background: #111114; border-radius: 28px; padding: 24px 48px 0;
+    display: grid; grid-template-columns: 1fr 390px 1fr; gap: 40px; align-items: end; overflow: hidden;
+  }
+  .design__col { display: flex; flex-direction: column; gap: 56px; padding-bottom: 72px; }
+  .design__col--right { text-align: left; }
+  .design__col:first-child { text-align: right; }
+  .design__ghost-num { font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 700; color: rgba(68,147,250,0.35); letter-spacing: -0.02em; }
+  .design__item-title { font-size: 19px; font-weight: 600; color: #fff; margin-top: 8px; }
+  .design__item-desc { font-size: 15px; color: rgba(255,255,255,0.55); margin-top: 6px; line-height: 1.5; }
+  .design__center { display: flex; justify-content: center; align-items: flex-end; position: relative; }
+  .design__glow {
+    position: absolute; width: 720px; height: 638px; left: -159px; bottom: 0;
+    background: radial-gradient(ellipse at 50% 60%, rgba(68,147,250,0.28), transparent 65%); pointer-events: none;
+  }
+  .design__phone { position: relative; width: 100%; max-width: 390px; }
+  .design__phone img { width: 100%; display: block; }
+
+  /* 07 RESULTS */
+  .results { padding: 0 56px 200px; max-width: 1280px; margin: 0 auto; }
+  .results__heading { margin-top: 20px; margin-bottom: 64px; max-width: 640px; }
+  .results__row { display: flex; align-items: stretch; justify-content: center; gap: 0; }
+  .results__step {
+    flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 8px; align-items: center;
+    opacity: 0; transform: translateY(28px);
+    transition: opacity .6s cubic-bezier(0.16,1,0.3,1), transform .6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .results__step.is-visible { opacity: 1; transform: translateY(0); }
+  .results__frame {
+    width: 100%; max-width: 260px; aspect-ratio: 704/1401; border-radius: 20px; overflow: hidden;
+    background: #0e0e11; box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+  }
+  .results__frame img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top; }
+  .results__caption { text-align: center; }
+  .results__step-label { font-size: 11px; font-weight: 700; color: #4493fa; letter-spacing: 1px; text-transform: uppercase; }
+  .results__step-desc { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+  .results__arrow {
+    display: flex; align-items: center; padding: 0 8px; color: rgba(255,255,255,0.25); font-size: 24px;
+    opacity: 0; transition: opacity .5s ease;
+  }
+  .results__arrow.is-visible { opacity: 1; }
+
+  /* 08 POST-LAUNCH */
+  .monitoring { padding: 0 56px 150px; max-width: 1280px; margin: 0 auto; }
+  .monitoring__heading { margin-bottom: 40px; max-width: 640px; line-height: 1.25; }
+  .monitoring__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 16px; }
+  .monitoring__hero {
+    grid-row: span 2; position: relative; overflow: hidden;
+    background: linear-gradient(150deg, rgba(68,147,250,0.14), rgba(68,147,250,0.02));
+    border: 1px solid rgba(68,147,250,0.3); border-radius: 18px; padding: 36px;
+    display: flex; flex-direction: column; justify-content: space-between; min-height: 280px;
+  }
+  .monitoring__hero-label { font-size: 12px; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; text-transform: uppercase; }
+  .monitoring__hero-val { font-size: 88px; font-weight: 800; color: #4493fa; line-height: 0.9; letter-spacing: -0.04em; }
+  .monitoring__hero-desc { font-size: 15px; color: rgba(255,255,255,0.6); margin-top: 14px; max-width: 280px; }
+  .monitoring__tile { background: rgba(255,255,255,0.03); border-radius: 18px; padding: 28px; }
+  .monitoring__tile-val { font-size: 40px; font-weight: 800; color: #4493fa; letter-spacing: -0.03em; }
+  .monitoring__tile-desc { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 10px; }
+  .monitoring__tile--wide {
+    grid-column: span 2; display: flex; align-items: center; gap: 20px;
+  }
+  .monitoring__tile--wide .monitoring__tile-desc { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 0; }
+
+  /* FOOTER */
+  .br-footer {
+    border-top: 0.5px solid rgba(255,255,255,0.08); padding: 32px 56px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: #5a5a60;
+  }
+
+  @media (max-width: 900px) {
+    .hero__inner, .overview__grid, .research__grid, .validation__grid, .design__panel { grid-template-columns: 1fr; }
+    .process__grid { grid-template-columns: 1fr; }
+    .stat-panels { grid-template-columns: 1fr; }
+    .monitoring__grid { grid-template-columns: 1fr 1fr; }
+    .monitoring__hero { grid-row: auto; grid-column: span 2; }
+    .monitoring__tile--wide { grid-column: span 2; }
+    .validation__image { margin-right: 0; border-radius: 24px; }
+    .design__col { text-align: left !important; padding-bottom: 24px; }
+    .results__row { flex-wrap: wrap; }
+    .br-header { padding: 16px 20px; }
+    .br-header__crumb { display: none; }
+    .hero, .overview, .research, .process, .validation, .full-bleed, .rice, .design, .results, .monitoring { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="br-header">
+    <a href="../index.html" class="br-header__back">&larr; Back to works</a>
+    <div class="br-header__crumb">
+      <span>Bet Route</span><span>/</span><span>Registration</span>
+    </div>
+    <a href="mailto:petrenkoag95@gmail.com" class="br-header__contact">Contact</a>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <canvas class="hero__storm" data-storm aria-hidden="true"></canvas>
+      <div class="hero__fade" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <div class="hero__content">
+          <p class="hero__eyebrow">Project overview</p>
+          <h1 class="hero__title">Bet Route &mdash;<br><span>rebuilding sign-up</span><br>that keeps users</h1>
+          <p class="hero__desc">A sports betting app losing new users during registration. We rebuilt the flow into a clear 3-step process with upfront bonuses and one-tap Google sign-in.</p>
+          <div class="hero__meta">
+            <div class="hero__meta-cell">
+              <span class="hero__meta-label">Industry</span>
+              <span class="hero__meta-val">Betting App</span>
+            </div>
+            <div class="hero__meta-cell">
+              <span class="hero__meta-label">Location</span>
+              <span class="hero__meta-val">Africa</span>
+            </div>
+            <div class="hero__meta-cell">
+              <span class="hero__meta-label">Role</span>
+              <span class="hero__meta-val">Product Designer</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero__phone-wrap">
+          <img src="../assets/images/br-hand-phone-cutout.png" alt="Hand holding phone showing the Bet Route registration screen">
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 OVERVIEW & TASK -->
+    <section class="overview">
+      <span class="section-eyebrow">01 &middot; Overview &amp; Task</span>
+      <div class="overview__grid">
+        <div>
+          <h2 class="section-heading">Fix a registration flow so leaky that most new users <span style="color:#4493fa;">never made it past step one.</span></h2>
+        </div>
+        <div class="funnel">
+          <div class="funnel__col">
+            <span class="funnel__pct" style="color:#8fc0ff;">100%</span>
+            <div class="funnel__bar" style="height:150px;background:linear-gradient(180deg,#4493fa,rgba(68,147,250,0.35));"></div>
+            <span class="funnel__label">Step 1</span>
+          </div>
+          <div class="funnel__col">
+            <span class="funnel__pct" style="color:rgba(255,255,255,0.55);">41%</span>
+            <div class="funnel__bar" style="height:62px;background:linear-gradient(180deg,rgba(68,147,250,0.45),rgba(68,147,250,0.12));"></div>
+            <span class="funnel__label">Step 2</span>
+          </div>
+          <div class="funnel__col">
+            <span class="funnel__pct" style="color:rgba(255,255,255,0.4);">16%</span>
+            <div class="funnel__bar" style="height:24px;background:rgba(68,147,250,0.2);"></div>
+            <span class="funnel__label">Done</span>
+          </div>
+        </div>
+      </div>
+
+      <span class="pill-outline">The problems</span>
+      <div class="stat-panels">
+        <div class="stat-panel">
+          <span class="stat-panel__num" data-countup="84">0%</span>
+          <p class="stat-panel__desc">found the registration form too long, with steps that felt irrelevant.</p>
+        </div>
+        <div class="stat-panel">
+          <span class="stat-panel__num" data-countup="44">0%</span>
+          <p class="stat-panel__desc">wanted to sign up with Google or Facebook instead.</p>
+        </div>
+        <div class="stat-panel">
+          <span class="stat-panel__num" data-countup="21">0%</span>
+          <p class="stat-panel__desc">weren&rsquo;t even sure why they should register.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 USER RESEARCH -->
+    <section class="research">
+      <div class="research__grid">
+        <div class="research__text">
+          <span class="section-eyebrow">02 &middot; User Research</span>
+          <h2 class="section-heading research__heading">
+            We conducted
+            <span class="chip-inline">User interviews</span>
+            and
+            <span class="chip-inline">Usability testing</span>
+            to gather qualitative insights into why users struggle with registration
+          </h2>
+          <p class="research__quote">&ldquo;This helped us understand their needs, expectations, and frustrations while interacting with the form.&rdquo;</p>
+        </div>
+        <div class="research__photo">
+          <img src="../assets/images/br-research-photo.jpg" alt="Participant quotes gathered during interviews">
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 PROCESS -->
+    <section class="process">
+      <span class="section-eyebrow">03 &middot; Process</span>
+      <h2 class="section-heading process__heading">Three stages, one problem to solve</h2>
+      <div class="process__grid">
+        <div class="process__col">
+          <div>
+            <span class="process__num">01</span>
+            <h3 class="process__title">Discovery &amp; Define</h3>
+          </div>
+          <div class="process__tags">
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Problem analysis</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>User research</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>In-depth interviews &amp; usability testing</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Journey mapping</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Prioritization of hypotheses</span>
+          </div>
+        </div>
+        <div class="process__col">
+          <div>
+            <span class="process__num">02</span>
+            <h3 class="process__title">Design</h3>
+          </div>
+          <div class="process__tags">
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Wireframes</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>High-fidelity designs</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Interactive prototype</span>
+          </div>
+        </div>
+        <div class="process__col">
+          <div>
+            <span class="process__num">03</span>
+            <h3 class="process__title">Deliver &amp; Testing</h3>
+          </div>
+          <div class="process__tags">
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Registration flow usability testing</span>
+            <span class="tag-pill"><span class="tag-pill__dot"></span>Post-launch monitoring</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 VALIDATION -->
+    <section class="validation">
+      <div class="validation__grid">
+        <div class="validation__left">
+          <span class="section-eyebrow">04 &middot; Validation</span>
+          <h2 class="section-heading validation__heading">Here are some usability testing task examples</h2>
+          <div class="validation__tasks">
+            <div class="validation__task">
+              <span class="validation__task-num mono">01</span>
+              <div>
+                <p class="validation__task-title">Create and enter a password that meets the requirements (length, special characters).</p>
+                <p class="validation__task-sub">Assess the clarity of the form fields, hints, and data requirements.</p>
+              </div>
+            </div>
+            <div class="validation__task">
+              <span class="validation__task-num mono">02</span>
+              <div>
+                <p class="validation__task-title">Complete the registration form by entering the required information (name, phone, password).</p>
+                <p class="validation__task-sub">Identify whether the password requirements are clear and user-friendly.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="validation__image">
+          <img src="../assets/images/br-hero-cover.png" alt="Bet Route registration screen mid-session">
+        </div>
+      </div>
+    </section>
+
+    <!-- FULL-BLEED BRAND IMAGE -->
+    <div class="full-bleed">
+      <div class="full-bleed__img">
+        <img src="../assets/images/br-brand-split.jpg" alt="Bet Route brand — portrait and home-screen app icon">
+      </div>
+    </div>
+
+    <!-- 05 PRIORITIZATION (RICE) -->
+    <section class="rice">
+      <span class="section-eyebrow">05 &middot; Prioritization</span>
+      <h2 class="section-heading rice__heading">Ranked by RICE score</h2>
+      <p class="rice__intro">Solutions addressing the biggest pain points, weighed against effort and confidence.</p>
+
+      <div class="rice__list">
+
+        <div class="rice-card rice-card--top" data-rice-card data-rice-delay="0">
+          <div class="rice-card__glow" aria-hidden="true"></div>
+          <div class="rice-card__row">
+            <div class="rice-card__idea">
+              <span class="rice-card__num">01</span>
+              <p class="rice-card__label">Simplify the form — split registration into smaller steps to cut drop-off.</p>
+            </div>
+            <div class="rice-card__score-col">
+              <span class="rice-card__score mono" data-rice-score="9.2">0.0</span>
+              <span class="rice-card__score-label">RICE score</span>
+            </div>
+          </div>
+          <div class="rice-card__bars">
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Reach</span><span class="rice-bar__val">High</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="90" style="transition-delay:0s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Impact</span><span class="rice-bar__val">High</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="85" style="transition-delay:.08s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Confidence</span><span class="rice-bar__val">Med</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="65" style="transition-delay:.16s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Effort</span><span class="rice-bar__val">Low</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill rice-bar__fill--dim" data-rice-bar="35" style="transition-delay:.24s;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rice-card" data-rice-card data-rice-delay="120">
+          <div class="rice-card__row">
+            <div class="rice-card__idea">
+              <span class="rice-card__num">02</span>
+              <p class="rice-card__label">Highlight registration benefits up front to lift motivation.</p>
+            </div>
+            <div class="rice-card__score-col">
+              <span class="rice-card__score mono" data-rice-score="6.4">0.0</span>
+              <span class="rice-card__score-label">RICE score</span>
+            </div>
+          </div>
+          <div class="rice-card__bars">
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Reach</span><span class="rice-bar__val">High</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="80" style="transition-delay:0s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Impact</span><span class="rice-bar__val">Med</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="60" style="transition-delay:.08s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Confidence</span><span class="rice-bar__val">Med</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="60" style="transition-delay:.16s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Effort</span><span class="rice-bar__val">Med</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill rice-bar__fill--dim" data-rice-bar="55" style="transition-delay:.24s;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rice-card" data-rice-card data-rice-delay="240">
+          <div class="rice-card__row">
+            <div class="rice-card__idea">
+              <span class="rice-card__num">03</span>
+              <p class="rice-card__label">Add social login (Google, Facebook) for faster, easier sign-up.</p>
+            </div>
+            <div class="rice-card__score-col">
+              <span class="rice-card__score mono" data-rice-score="5.1">0.0</span>
+              <span class="rice-card__score-label">RICE score</span>
+            </div>
+          </div>
+          <div class="rice-card__bars">
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Reach</span><span class="rice-bar__val">Med</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="60" style="transition-delay:0s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Impact</span><span class="rice-bar__val">Med</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="60" style="transition-delay:.08s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Confidence</span><span class="rice-bar__val">High</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill" data-rice-bar="85" style="transition-delay:.16s;"></div></div>
+            </div>
+            <div>
+              <div class="rice-bar__top"><span class="rice-bar__label">Effort</span><span class="rice-bar__val">Med-High</span></div>
+              <div class="rice-bar__track"><div class="rice-bar__fill rice-bar__fill--dim" data-rice-bar="70" style="transition-delay:.24s;"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 06 DESIGN (annotated) -->
+    <section class="design">
+      <span class="section-eyebrow">06 &middot; Design</span>
+      <h2 class="section-heading design__heading">The hypotheses, built into the interface</h2>
+
+      <div class="design__panel">
+        <div class="design__col">
+          <div>
+            <span class="design__ghost-num">01</span>
+            <p class="design__item-title">3-step flow</p>
+            <p class="design__item-desc">Registration split into a clear 3-step flow</p>
+          </div>
+          <div>
+            <span class="design__ghost-num">03</span>
+            <p class="design__item-title">Inline validation</p>
+            <p class="design__item-desc">Empty fields highlight on submit, not before</p>
+          </div>
+        </div>
+        <div class="design__center">
+          <div class="design__glow" aria-hidden="true"></div>
+          <div class="design__phone">
+            <img src="../assets/images/br-design-hand.png" alt="Redesigned registration screen, step 1 of 3">
+          </div>
+        </div>
+        <div class="design__col design__col--right">
+          <div>
+            <span class="design__ghost-num">02</span>
+            <p class="design__item-title">Motivation first</p>
+            <p class="design__item-desc">Bonuses highlighted before any details are asked</p>
+          </div>
+          <div>
+            <span class="design__ghost-num">04</span>
+            <p class="design__item-title">One-tap login</p>
+            <p class="design__item-desc">Sign-up added via Google, one tap</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 RESULTS -->
+    <section class="results">
+      <span class="section-eyebrow">07 &middot; Results</span>
+      <h2 class="section-heading results__heading">The new flow, end to end</h2>
+
+      <div class="results__row">
+        <div class="results__step" data-reveal-step="0">
+          <div class="results__frame">
+            <img src="../assets/images/br-step1.png" alt="Step 1 of 3 — choose bonus and enter phone number">
+          </div>
+          <div class="results__caption">
+            <span class="results__step-label">Step 1</span>
+            <p class="results__step-desc">Choose bonus, enter phone</p>
+          </div>
+        </div>
+        <div class="results__arrow" data-reveal-arrow="1">&rarr;</div>
+        <div class="results__step" data-reveal-step="1">
+          <div class="results__frame">
+            <img src="../assets/images/br-step2.png" alt="Step 2 of 3 — confirm phone number">
+          </div>
+          <div class="results__caption">
+            <span class="results__step-label">Step 2</span>
+            <p class="results__step-desc">Confirm phone number</p>
+          </div>
+        </div>
+        <div class="results__arrow" data-reveal-arrow="2">&rarr;</div>
+        <div class="results__step" data-reveal-step="2">
+          <div class="results__frame">
+            <img src="../assets/images/br-step3.png" alt="Step 3 of 3 — personal details">
+          </div>
+          <div class="results__caption">
+            <span class="results__step-label">Step 3</span>
+            <p class="results__step-desc">Personal details</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 POST-LAUNCH MONITORING -->
+    <section class="monitoring">
+      <span class="section-eyebrow">08 &middot; Post-launch monitoring</span>
+      <h2 class="section-heading monitoring__heading">Results after implementing the proposed hypotheses</h2>
+      <div class="monitoring__grid">
+        <div class="monitoring__hero">
+          <span class="monitoring__hero-label">Drop-off reduction</span>
+          <div>
+            <span class="monitoring__hero-val">&uarr;25%</span>
+            <p class="monitoring__hero-desc">Fewer users abandon registration mid-flow.</p>
+          </div>
+        </div>
+        <div class="monitoring__tile">
+          <span class="monitoring__tile-val">&uarr;5%</span>
+          <p class="monitoring__tile-desc">completion rate</p>
+        </div>
+        <div class="monitoring__tile">
+          <span class="monitoring__tile-val">&uarr;15%</span>
+          <p class="monitoring__tile-desc">more started</p>
+        </div>
+        <div class="monitoring__tile monitoring__tile--wide">
+          <span class="monitoring__tile-val">&darr;28%</span>
+          <p class="monitoring__tile-desc">Reduction in the time needed to register</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="br-footer">
+    <span>Anastasiia Petrenko &mdash; Lead Product Designer</span>
+    <span>&copy; 2026</span>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  function initCountUp() {
+    var els = Array.prototype.slice.call(document.querySelectorAll('[data-countup]'));
+    if (!els.length) return;
+    var animate = function (el) {
+      var target = parseInt(el.getAttribute('data-countup'), 10) || 0;
+      var dur = 1400;
+      var start = performance.now();
+      var step = function (now) {
+        var t = Math.min(1, (now - start) / dur);
+        var eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased) + '%';
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { animate(e.target); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.5 });
+    els.forEach(function (el) { io.observe(el); });
+  }
+
+  function initRiceCards() {
+    var cards = Array.prototype.slice.call(document.querySelectorAll('[data-rice-card]'));
+    if (!cards.length) return;
+    var reveal = function (card) {
+      var delay = parseInt(card.getAttribute('data-rice-delay'), 10) || 0;
+      setTimeout(function () {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+        card.querySelectorAll('[data-rice-bar]').forEach(function (bar) {
+          bar.style.width = bar.getAttribute('data-rice-bar') + '%';
+        });
+        var scoreEl = card.querySelector('[data-rice-score]');
+        if (scoreEl) {
+          var target = parseFloat(scoreEl.getAttribute('data-rice-score')) || 0;
+          var dur = 1200, start = performance.now();
+          var step = function (now) {
+            var t = Math.min(1, (now - start) / dur);
+            var eased = 1 - Math.pow(1 - t, 3);
+            scoreEl.textContent = (target * eased).toFixed(1);
+            if (t < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+      }, delay);
+    };
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.35 });
+    cards.forEach(function (c) { io.observe(c); });
+    cards.forEach(function (c) {
+      c.addEventListener('mouseenter', function () {
+        c.style.transform = 'translateY(-4px)';
+        c.style.boxShadow = '0 24px 60px rgba(0,0,0,0.4)';
+      });
+      c.addEventListener('mouseleave', function () {
+        c.style.transform = 'translateY(0)';
+        c.style.boxShadow = '';
+      });
+    });
+  }
+
+  function initStepReveal() {
+    var steps = Array.prototype.slice.call(document.querySelectorAll('[data-reveal-step]'));
+    var arrows = Array.prototype.slice.call(document.querySelectorAll('[data-reveal-arrow]'));
+    if (!steps.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        steps.forEach(function (el) {
+          var i = parseInt(el.getAttribute('data-reveal-step'), 10) || 0;
+          setTimeout(function () { el.classList.add('is-visible'); }, i * 450);
+        });
+        arrows.forEach(function (el) {
+          var i = parseInt(el.getAttribute('data-reveal-arrow'), 10) || 0;
+          setTimeout(function () { el.classList.add('is-visible'); }, i * 450 - 120);
+        });
+      });
+    }, { threshold: 0.25 });
+    io.observe(steps[0]);
+  }
+
+  function initStorm() {
+    var canvas = document.querySelector('[data-storm]');
+    if (!canvas) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var ctx = canvas.getContext('2d');
+    var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var resize = function () {
+      var r = canvas.getBoundingClientRect();
+      W = r.width; H = r.height;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    var bolts = [];
+    var makeBolt = function () {
+      var startX = W * (0.15 + Math.random() * 0.7);
+      var segs = 14 + Math.floor(Math.random() * 8);
+      var pts = [{ x: startX, y: -20 }];
+      var x = startX, y = -20;
+      var stepY = (H + 40) / segs;
+      var branches = [];
+      for (var i = 0; i < segs; i++) {
+        x += (Math.random() - 0.5) * 130;
+        y += stepY;
+        pts.push({ x: x, y: y });
+        if (Math.random() < 0.22 && i > 2) {
+          var b = [{ x: x, y: y }];
+          var bx = x, by = y;
+          var bsegs = 3 + Math.floor(Math.random() * 4);
+          for (var j = 0; j < bsegs; j++) {
+            bx += (Math.random() - 0.5) * 70 + (Math.random() < 0.5 ? -30 : 30);
+            by += stepY * 0.7;
+            b.push({ x: bx, y: by });
+          }
+          branches.push(b);
+        }
+      }
+      return { pts: pts, branches: branches, life: 1, born: performance.now() };
+    };
+
+    var drawPath = function (pts, alpha, width, core) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.strokeStyle = core ? 'rgba(210,232,255,' + alpha + ')' : 'rgba(68,147,250,' + (alpha * 0.7) + ')';
+      ctx.lineWidth = width;
+      ctx.shadowColor = 'rgba(68,147,250,' + (alpha * 0.9) + ')';
+      ctx.shadowBlur = core ? 18 : 28;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    };
+
+    var flashAlpha = 0;
+    var nextStrike = performance.now() + 600;
+
+    var loop = function (now) {
+      ctx.clearRect(0, 0, W, H);
+      if (flashAlpha > 0) {
+        ctx.fillStyle = 'rgba(68,147,250,' + (flashAlpha * 0.06) + ')';
+        ctx.fillRect(0, 0, W, H);
+        flashAlpha *= 0.88;
+        if (flashAlpha < 0.02) flashAlpha = 0;
+      }
+      if (now >= nextStrike) {
+        bolts.push(makeBolt());
+        if (Math.random() < 0.4) bolts.push(makeBolt());
+        flashAlpha = 1;
+        nextStrike = now + 900 + Math.random() * 1700;
+      }
+      for (var i = bolts.length - 1; i >= 0; i--) {
+        var b = bolts[i];
+        var age = (now - b.born) / 620;
+        b.life = 1 - age;
+        if (b.life <= 0) { bolts.splice(i, 1); continue; }
+        var a = b.life * (0.6 + Math.random() * 0.4);
+        drawPath(b.pts, a * 0.5, 5.5, false);
+        drawPath(b.pts, a, 2.2, true);
+        b.branches.forEach(function (br) {
+          drawPath(br, a * 0.35, 3.6, false);
+          drawPath(br, a * 0.8, 1.6, true);
+        });
+      }
+      ctx.shadowBlur = 0;
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initCountUp();
+    initRiceCards();
+    initStepReveal();
+    initStorm();
+  });
+})();
+</script>
+</body>
+</html>

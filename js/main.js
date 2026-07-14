@@ -59,4 +59,10 @@ function initScrollReveal() {
 document.addEventListener('DOMContentLoaded', () => {
   initBurger();
   initScrollReveal();
+
+  document.querySelectorAll('.work-card[data-href]').forEach((card) => {
+    card.addEventListener('click', () => {
+      window.location.href = card.dataset.href;
+    });
+  });
 });
